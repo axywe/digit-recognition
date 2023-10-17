@@ -4,7 +4,6 @@
 This repository contains Python code for a simple feedforward neural network (NN) designed to classify images. The network is implemented from scratch and can be configured to have a varying number of neurons in its hidden layer. The project includes a Flask web interface for interactive image classification.
 
 ## Features
-- Customizable hidden layer size
 - Performance metrics including accuracy, F1 score, precision, and recall
 - Test script to evaluate performance on different hidden layer sizes
 - Flask web interface for real-time image classification
