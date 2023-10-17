@@ -1,7 +1,7 @@
 # Simple Neural Network for Digit Recognition
 
 ## Overview
-This repository contains Python code for a simple feedforward neural network (NN) designed to classify images. The network is implemented from scratch and can be configured to have a varying number of neurons in its hidden layer. The project includes a Flask web interface for interactive image classification.
+This repository contains Python code for a simple feedforward neural network (NN) designed to classify images. The project includes a Flask web interface for interactive image classification.
 
 ## Features
 - Performance metrics including accuracy, F1 score, precision, and recall
