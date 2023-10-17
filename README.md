@@ -13,7 +13,7 @@ This repository contains Python code for a simple feedforward neural network (NN
 ## Dependencies
 - Python 3.x
 - NumPy
-- scikit-learn
+- scikit-learn (only for testing)
 - PIL (Pillow)
 - Flask
 
