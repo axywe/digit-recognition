@@ -3,23 +3,26 @@ import numpy as np
 import os
 from simple_nn import SimpleNN
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+
 
 def print_plot(accuracy_history, loss_history):
-    plt.subplot(2, 1, 1)
-    plt.plot(accuracy_history)
-    plt.title('Accuracy')
+    pp = PdfPages('test.pdf')
+    fig = plt.figure(figsize=(12, 6))
+    plt.plot(accuracy_history, linewidth=2, c="blue")
+    plt.plot(loss_history, linewidth=2, c="red")
+    plt.title('Accuracy and Loss')
     plt.xlabel('Iteration')
     plt.ylabel('Accuracy')
-
-    plt.subplot(2, 1, 2)
-    plt.plot(loss_history)
-    plt.title('Loss')
-    plt.xlabel('Iteration')
-    plt.ylabel('Loss')
-
-    plt.tight_layout()
+    plt.ylim(bottom=-1)
+    plt.xlim(right=len(accuracy_history) + 1)
     plt.show()
+    pp.savefig(fig)
+    pp.close()
+
+
 def load_images(folder):
+    print("Loading data...")
     images = []
     labels = []
     for filename in os.listdir(folder):
@@ -34,14 +37,14 @@ def load_images(folder):
     return np.array(images), np.array(labels)
 
 
-nn = SimpleNN(784, 50, 10)
+nn = SimpleNN(784, 100, 10)
 images, labels = load_images("img")
 accuracy_history, loss_history = nn.train(images, labels, num_passes=10000, epsilon=0.01, batch_size=100)
-if not os.path.exists("../weights"):
-    os.makedirs("../weights")
-np.save('../weights/W1.npy', nn.W1)
-np.save('../weights/b1.npy', nn.b1)
-np.save('../weights/W2.npy', nn.W2)
-np.save('../weights/b2.npy', nn.b2)
+if not os.path.exists("weights"):
+    os.makedirs("weights")
+np.save('weights/W1.npy', nn.W1)
+np.save('weights/b1.npy', nn.b1)
+np.save('weights/W2.npy', nn.W2)
+np.save('weights/b2.npy', nn.b2)
 print("Model trained and weights saved.")
 print_plot(accuracy_history, loss_history)

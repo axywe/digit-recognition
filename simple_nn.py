@@ -1,5 +1,5 @@
 import numpy as np
-
+import sys
 accuracy_history = []
 loss_history = []
 
@@ -7,10 +7,10 @@ loss_history = []
 class SimpleNN:
     def __init__(self, input_size, hidden_size, output_size, load_model=False):
         if load_model:
-            self.W1 = np.load('../weights/W1.npy')
-            self.b1 = np.load('../weights/b1.npy')
-            self.W2 = np.load('../weights/W2.npy')
-            self.b2 = np.load('../weights/b2.npy')
+            self.W1 = np.load('weights/W1.npy')
+            self.b1 = np.load('weights/b1.npy')
+            self.W2 = np.load('weights/W2.npy')
+            self.b2 = np.load('weights/b2.npy')
         else:
             self.W1 = np.random.randn(input_size, hidden_size) * 0.01
             self.b1 = np.zeros((1, hidden_size))
@@ -52,11 +52,16 @@ class SimpleNN:
 
             predicted_labels = np.argmax(self.forward(X_batch), axis=1)
             accuracy = np.mean(predicted_labels == y_batch)
-            accuracy_history.append(accuracy)
+            accuracy_history.append(accuracy*100)
 
             loss = -np.log(self.probs[range(len(y_batch)), y_batch])
             total_loss = np.sum(loss)
             loss_history.append(total_loss)
-            if i % 100 == 0:
-                print(f"Training pass {i} completed.")
+            percent = 100.0 * i / num_passes
+            sys.stdout.write('\r')
+            sys.stdout.write("Completed: [{:{}}] {:>3}%"
+                             .format('=' * int(percent / (100.0 / 30)),
+                                     30, int(percent)))
+            sys.stdout.flush()
+        print("\n")
         return accuracy_history, loss_history
