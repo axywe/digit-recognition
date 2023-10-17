@@ -43,3 +43,7 @@ The performance of the model is evaluated using the following metrics:
 - **F1 Score**: The harmonic mean of precision and recall.
 - **Precision**: The number of true positives divided by the number of true and false positives.
 - **Recall**: The number of true positives divided by the number of true positives and false negatives.
+
+## Credits
+
+This project is based on the SimpleNN repository by [ArtemOnigiri](https://github.com/ArtemOnigiri). You can find the original code [here](https://github.com/ArtemOnigiri/SimpleNN).
