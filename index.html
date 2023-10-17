@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digit Recognition</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Container */
+        .container {
+            max-width: 500px;
+            min-height: 583px;
+            margin: 2rem auto;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Canvas Styles */
+        #canvas {
+            width: 280px;
+            height: 280px;
+            border: 3px solid #2c3e50;
+            margin: 1rem auto;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Button Styles */
+        button {
+            display: block;
+            margin: 1rem auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Bars for prediction results */
+        #bars {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .bar {
+            width: 40px;
+            background-color: #8e44ad;
+            margin: 2px;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            transition: height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Digit Recognition</h1>
+        <canvas id="canvas" width="28" height="28"></canvas>
+        <button id="clearCanvas">Clear</button>
+        <div id="bars"></div>
+    </div>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var drawing = false;
+        var scaleFactor = canvas.offsetWidth / canvas.width;
+
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+
+        document.getElementById("clearCanvas").addEventListener("click", function() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+        });
+
+        canvas.addEventListener("mousedown", function(e) {
+            drawing = true;
+            ctx.moveTo((e.pageX - canvas.offsetLeft) / scaleFactor, (e.pageY - canvas.offsetTop) / scaleFactor);
+        });
+
+        canvas.addEventListener("mousemove", function(e) {
+            if (drawing) {
+                ctx.lineTo((e.pageX - canvas.offsetLeft) / scaleFactor, (e.pageY - canvas.offsetTop) / scaleFactor);
+                ctx.stroke();
+                sendDataToServer();
+            }
+        });
+
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseout", stopDrawing);
+
+        function stopDrawing() {
+            drawing = false;
+        }
+
+        function sendDataToServer() {
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            var pixelData = [];
+            for (var i = 0; i < imageData.length; i += 4) {
+                pixelData.push(imageData[i]);
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/predict", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    updateBars(data);
+                }
+            };
+            xhr.send(JSON.stringify({ image_data: pixelData }));
+        }
+
+        function updateBars(data) {
+            var barsDiv = document.getElementById("bars");
+            barsDiv.innerHTML = "";
+            barsDiv.style.opacity = 1;
+
+            data.probabilities.forEach(function(prob, index) {
+                var bar = document.createElement("div");
+                bar.className = "bar";
+                bar.style.height = (prob * 100) + "px";
+                bar.innerHTML = index + "<br>" + (prob * 100).toFixed(2) + "%";
+                barsDiv.appendChild(bar);
+            });
+        }
+    </script>
+</body>
+</html>
